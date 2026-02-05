@@ -3,7 +3,7 @@
 
 import { PageHeader } from "@/components/ui/page-header";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -27,16 +27,7 @@ export default function SortingPage() {
     // Voiceover Hook
     const { speak, cancel, isSpeaking, isEnabled, toggleVoice } = useTextToSpeech();
 
-    useEffect(() => {
-        generateArray();
-    }, []);
-
-    // Cleanup
-    useEffect(() => {
-        return () => cancel();
-    }, [cancel]);
-
-    const generateArray = () => {
+    const generateArray = useCallback(() => {
         const size = 20;
         const newArr = Array.from({ length: size }, () => Math.floor(Math.random() * 50) + 5);
         setArray(newArr);
@@ -45,7 +36,16 @@ export default function SortingPage() {
         setIsPlaying(false);
         setMessage("New array generated.");
         cancel();
-    };
+    }, [cancel]);
+
+    useEffect(() => {
+        generateArray();
+    }, [generateArray]);
+
+    // Cleanup
+    useEffect(() => {
+        return () => cancel();
+    }, [cancel]);
 
     const loadDemo = () => {
         const demoArr = [40, 10, 30, 5, 25, 45, 15, 35, 20, 50, 12, 8, 42, 28, 6];
