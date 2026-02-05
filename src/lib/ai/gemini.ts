@@ -49,7 +49,7 @@ export const getOperationExplanation = async (operation: string, value: string |
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-flash-latest',
       contents: prompt,
     });
     return response.text || "No explanation available.";
@@ -73,7 +73,7 @@ export const chatWithTutor = async (messages: ChatMessage[], nodes: any[]) => {
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-flash-latest',
       contents: contents,
       config: {
         systemInstruction: `You are Nodey, a friendly and expert computer science tutor specializing in Linked Lists.
