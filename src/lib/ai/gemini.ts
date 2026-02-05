@@ -41,9 +41,10 @@ export const getOperationExplanation = async (operation: string, value: string |
     I am performing a "${operation}" operation ${value !== null ? `with value "${value}"` : ''} on a ${kind} (Linked List).
     The current list structure contains: [${nodeSummary || 'Empty'}].
     
-    Explain step-by-step how this operation works specifically for a ${kind} structure. 
-    Focus on pointer manipulation (next, prev, head, tail).
-    Keep it concise, professional, and educational. Use clear bullet points.
+    Explain this operation in strictly 2-3 short sentences.
+    Focus only on critical pointer changes.
+    Do NOT use bullet points.
+    Max 50 words.
     Return only the explanation.
   `;
 
@@ -80,7 +81,8 @@ export const chatWithTutor = async (messages: ChatMessage[], nodes: any[]) => {
         The user is interacting with a linked list visualizer.
         The current list state is: [${nodeSummary}].
         Explain linked list concepts, pointer manipulation, and complexity analysis.
-        Keep answers educational, concise, and professional.`,
+        Keep answers extremely concise (max 2-3 sentences).
+        Avoid long lists or bullet points.`,
       },
     });
     return response.text || "I'm sorry, I'm having trouble processing that right now.";
