@@ -15,6 +15,7 @@ import { getSnippet } from '@/lib/code-snippets';
 
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { VoiceControl } from '@/components/ui/voice-control';
+import { SimpleToast } from '@/components/ui/simple-toast';
 
 const LinkedListPage = () => {
     const [nodes, setNodes] = useState<ListNode[]>([]);
@@ -26,8 +27,20 @@ const LinkedListPage = () => {
     const [history, setHistory] = useState<ListNode[][]>([]);
     const [codeLang, setCodeLang] = useState<"c" | "cpp" | "java" | "python">("cpp");
 
+    // Toast State
+    const [toast, setToast] = useState<{ message: string; visible: boolean; type: 'success' | 'error' | 'info' }>({
+        message: '',
+        visible: false,
+        type: 'info'
+    });
+
     // Voiceover Hook
     const { speak, cancel, isSpeaking, isEnabled, toggleVoice } = useTextToSpeech();
+
+    const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+        setToast({ message, visible: true, type });
+        setTimeout(() => setToast(prev => ({ ...prev, visible: false })), 3000);
+    };
 
     // Speak explanation when it updates
     useEffect(() => {
@@ -52,7 +65,6 @@ const LinkedListPage = () => {
         setHistory(prev => [...prev, nodes]);
         setExplanation('');
 
-        // ... existing logic ...
         getOperationExplanation(op, value === null ? null : value, nodes, listKind).then(setExplanation);
 
         let nextNodes: ListNode[] = nodes.map(n => ({ ...n, status: 'idle' as ListNode['status'] }));
@@ -138,6 +150,8 @@ const LinkedListPage = () => {
                         setNodes([...nextNodes]);
                         await sleep(600);
                         nextNodes.splice(idx, 1);
+                    } else {
+                        showToast(`Value ${value} not found for deletion`, 'error');
                     }
                     break;
                 }
@@ -154,12 +168,13 @@ const LinkedListPage = () => {
                             setNodes([...nextNodes]);
                             await sleep(1000);
                             found = true;
+                            showToast(`Value ${value} found at index ${i}`, 'success');
                             break;
                         }
                         nextNodes[i].status = 'idle';
                     }
                     if (!found) {
-                        // Optional: Show alert or toast
+                        showToast(`Value ${value} not found in the list`, 'error');
                     }
                     break;
                 }
@@ -221,7 +236,13 @@ const LinkedListPage = () => {
     };
 
     return (
-        <div className="flex flex-col gap-6 h-full font-sans">
+        <div className="flex flex-col gap-6 h-full font-sans relative">
+            <SimpleToast
+                message={toast.message}
+                isVisible={toast.visible}
+                type={toast.type}
+            />
+
             <div className="flex items-start justify-between">
                 <PageHeader
                     title="Linked List Visualizer"
